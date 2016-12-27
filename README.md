@@ -8,7 +8,10 @@ Command cmd = new Command();
 cmd.setClient("adb");
 cmd.setCommand("devices -l");
 //optional : cmd.setCommand("devices", "-l"):
-Executer executer = new Executer(line -> System.out.println(line)); //redirecting output of execution.
+ExecuterStreamFormatter streamFormatter = new ExecuterStreamFormatter(); //redirecting output of execution to the console,
+//optional: implement the Appender interface to redirect the standard and error outputs your way.
+
+Executer executer = new Executer(streamFormatter);
 try{
 executer.execute(cmd);
 }catch(IOException e){

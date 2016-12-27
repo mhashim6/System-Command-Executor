@@ -119,6 +119,21 @@ public class Command implements Serializable {
 		setCommand(cmd);
 	}
 	// ============================================================
+
+	/**
+	 * A copy Constructor
+	 * 
+	 * @param commandObject
+	 */
+	@SuppressWarnings("unchecked")
+	public Command(Command commandObject) {
+		this();
+		client = commandObject.getClient();
+		command = (ArrayList<String>) command.clone();
+		commandArgs = (ArrayList<String>) commandArgs.clone();
+		finalCommand = (ArrayList<String>) finalCommand.clone();
+	}
+	// ============================================================
 	// ============================================================
 
 	// CLIENT >>>>
@@ -293,4 +308,11 @@ public class Command implements Serializable {
 	// ============================================================
 	// ============================================================
 
+		@Override
+	public boolean equals(Object otherObject) {
+		if (otherObject instanceof Command)
+			if (this.toString().equals(otherObject.toString()))
+				return true;
+		return false;
+	}
 }

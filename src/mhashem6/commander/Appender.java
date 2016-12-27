@@ -35,11 +35,18 @@ package mhashem6.commander;
 public interface Appender {
 
 	/**
-	 * appends a new line of output
+	 * appends a new line of standard output
 	 * 
 	 * @param outputLine
 	 */
 	void appendLine(String outputLine);
+	// ============================================================
 
+	/**
+	 * appends a new line of error output
+	 * 
+	 * @param errOutputLine
+	 */
+	void appendErrLine(String errOutputLine);
+	// ============================================================
 }
-// ============================================================

@@ -18,25 +18,21 @@
 * 
 * this library is the base of Simple-ADB program : http://forum.xda-developers.com/android/software/revive-simple-adb-tool-t3417155
 * you can contact me @ abohashem.com@gmail.com
-* Source : https://github.com/mhashim6/Commander
+* Source : 
 *
 */
 
 package mhashem6.commander;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
 import mhashem6.commander.exceptions.*;
 
 /**
- * The class the can execute/abort a command, with ability of
- * producing(automatically) and writing (not automatically) an output.
+ * The class the can execute/abort a command, with ability of producing and
+ * writing output.
  * 
  * @see Command
- * @see SpecificCommand
- * @see ExecuterAndWriter
  * @author mhashem6 (Muhammad Hashim)
  */
 public class Executer {
@@ -46,33 +42,40 @@ public class Executer {
 	protected ProcessBuilder pb;
 	protected Process process;
 
-	protected InputStreamReader stdReader;
-	protected InputStreamReader errReader;
+	protected ExecuterStreamFormatter eStreamFormatter;
 
-	protected BufferedReader stdOutputBr;
-	protected BufferedReader errOutputBr;
-
-	protected String outputStdStr;
-	protected String outputErrStr;
-	protected boolean hasError;
-
-	protected StringBuilder outputToSave;
-
-	private Appender appendrObject;
+	protected int exitval = 777;
 
 	/**
 	 * 
-	 * The public constructor that requires a Appender implementing object to
-	 * display the output, if null is passed, the output will be written in the
-	 * console.
+	 * A constructor that requires a pre-initialized ExecuterStreamFormatter
+	 * object to display the output.
 	 * 
-	 * @param appendrObject
+	 * @param eStreamFormatter
 	 * 
-	 * @see Appender
+	 * @see ExecuterStreamFormatter
 	 */
-	public Executer(Appender appendrObject) {
-		clearOutput();
-		this.appendrObject = appendrObject;
+	public Executer(ExecuterStreamFormatter eStreamFormatter) {
+		setStreamFormatter(eStreamFormatter);
+	}
+	// ============================================================
+
+	/**
+	 * 
+	 * @return the ExecuterStreamFormatter instance of this instance.
+	 */
+	public ExecuterStreamFormatter getStreamFormatter() {
+		return eStreamFormatter;
+	}
+	// ============================================================
+
+	/**
+	 * changes the current instance of ExecuterStreamFormatter.
+	 * 
+	 * @param eStreamFormatter
+	 */
+	public void setStreamFormatter(ExecuterStreamFormatter eStreamFormatter) {
+		this.eStreamFormatter = eStreamFormatter;
 	}
 	// ============================================================
 
@@ -83,11 +86,11 @@ public class Executer {
 	 * @throws IOException
 	 */
 	public void execute(Command command) throws IOException {
-
-		clearOutput();
+		exitval = 777;
 		executeSilently(command);
-
 		recordOutput();
+
+		abort();
 
 	}
 	// ============================================================
@@ -114,74 +117,16 @@ public class Executer {
 	// ============================================================
 
 	/**
-	 * the method responsible for recording the output of the command line
+	 * the method responsible for passing the output to the ExecuterStreamReader
+	 * object.
 	 * 
 	 * @throws IOException
 	 * 
 	 */
 	protected void recordOutput() throws IOException {
 
-		try {
-
-			/** Get input streams */
-			stdReader = new InputStreamReader(process.getInputStream());
-			errReader = new InputStreamReader(process.getErrorStream());
-
-			stdOutputBr = new BufferedReader(stdReader);
-			errOutputBr = new BufferedReader(errReader);
-
-			outputToSave = new StringBuilder();
-			/** Read command standard output */
-			while ((outputStdStr = stdOutputBr.readLine()) != null) {
-
-				store(outputStdStr);
-				outputStdStr = null;
-			}
-
-			/** Read command error output */
-			while ((outputErrStr = errOutputBr.readLine()) != null) {
-				store(outputErrStr);
-				hasError = true;
-				outputErrStr = null;
-			}
-
-		}
-
-		finally {
-
-			if (hasError == true)
-				throw new OutputIsErrorException(cmd.getClient() != "" ? cmd.getClient() : "System");
-			closeResources();
-
-		}
-
-	}
-	// ============================================================
-
-	/**
-	 * to store the output line by line.
-	 * 
-	 * @param line
-	 */
-	protected void store(String line) {
-
-		outputToSave.append((line + System.getProperty("line.separator")));
-		showOutputLine(line);
-
-		line = null;
-	}
-	// ============================================================
-
-	/**
-	 * displays the output line by line
-	 * 
-	 * @param line
-	 */
-	protected void showOutputLine(String line) {
-
-		appendrObject.appendLine(line + System.getProperty("line.separator"));
-
-		line = null;
+		eStreamFormatter.FormatStdStream(process.getInputStream());
+		eStreamFormatter.FormatErrStream(process.getErrorStream());
 
 	}
 	// ============================================================
@@ -189,17 +134,19 @@ public class Executer {
 	/**
 	 * a method that aborts the current command process
 	 * 
-	 * @throws CmdAbortedException
+	 * @return
+	 * 
 	 * @throws IOException
 	 * 
 	 * @see Executer#isAlive()
 	 */
 	public void abort() throws IOException {
 		if (isAlive()) {
-			// closeResources();
 			process.destroyForcibly();
-
+			exitval = process.exitValue();
 		}
+		eStreamFormatter.closeResources();
+
 	}
 	// ============================================================
 
@@ -217,65 +164,20 @@ public class Executer {
 	// ============================================================
 
 	/**
-	 * returns a String representing the full output of the execution
-	 * 
-	 * @throws NoOutputException
-	 * @throws ExecNotFinishedException
-	 */
-	public String getOutput() throws NoOutputException, ExecNotFinishedException {
-
-		if (isAlive())
-			throw new ExecNotFinishedException();
-
-		if (outputToSave == null || outputToSave.equals(""))
-			throw new NoOutputException();
-
-		return outputToSave.toString();
-	}
-	// ============================================================
-
-	/**
 	 * @return the previously executed Command object stored in the Executer
 	 */
 	public Command getCommand() {
-		if (cmd == null)
-			throw new NullPointerException();
 		return cmd;
 	}
 
 	/**
-	 * clears the output of the execution
-	 */
-	public void clearOutput() {
-		outputToSave = null;
-		outputStdStr = null;
-		outputErrStr = null;
-		hasError = false;
-	}
-	// ============================================================
-
-	/**
-	 * closes the used resources objects used to obtain the output
 	 * 
-	 * @throws IOException
+	 * @return exit value of the process, or 777 if the exit value couldn't be
+	 *         retrieved successfully.
 	 */
-	protected void closeResources() throws IOException {
-
-		cmd = null;
-		pb = null;
-		process = null;
-
-		stdReader.close();
-		stdOutputBr.close();
-		stdReader = null;
-		stdOutputBr = null;
-
-		errReader.close();
-		errOutputBr.close();
-		errReader = null;
-		errOutputBr = null;
+	public int getExitValue() {
+		return exitval;
 
 	}
-	// ============================================================
 
 }
