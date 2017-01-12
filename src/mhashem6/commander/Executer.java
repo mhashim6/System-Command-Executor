@@ -85,9 +85,10 @@ public class Executer {
 	 * @param command
 	 * @throws IOException
 	 */
-	public void execute(Command command) throws IOException {
+	public void synchronized execute(Command command) throws IOException {
 		exitval = 777;
 		executeSilently(command);
+		eStreamFormatter.getAppender().appendStdLine("--powered by commander library.\n\n"); //DO NOT MODIFY.
 		recordOutput();
 
 		abort();
