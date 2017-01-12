@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import mhashem6.commander.Appender;
+
 public class ExecuterStreamFormatter {
 
 	protected BufferedReader bufferedReader;
@@ -15,14 +17,14 @@ public class ExecuterStreamFormatter {
 	 * initialize a new object with a specified Appender instance to show
 	 * output.
 	 * 
-	 * @param outputObject
+	 * @param appender
 	 * @see ExecuterStreamFormatter#ExecuterStreamFormatter()
 	 */
-	public ExecuterStreamFormatter(Appender outputObject) {
-		setAppender(outputObject);
+	public ExecuterStreamFormatter(Appender appender) {
+		setAppender(appender);
 	}
 	// ============================================================
-	
+
 	/**
 	 * will pass the output directly to the console.
 	 * 
@@ -34,20 +36,18 @@ public class ExecuterStreamFormatter {
 		this(new Appender() {
 
 			@Override
-			public void appendStdLine(String stdOutputLine) {
-				System.out.println(stdOutputLine);
+			public void appendText(String text) {
+				System.out.println(text);
 			}
 
 			@Override
-			public void appendErrLine(String errOutputLine) {
-				System.err.println(errOutputLine);
-
+			public void appendErrText(String text) {
+				System.err.println(text);
 			}
-
 		});
 	}
 	// ============================================================
-	
+
 	/**
 	 * 
 	 * @return the Appender instance of this object.
@@ -72,27 +72,24 @@ public class ExecuterStreamFormatter {
 	 * Formats the passed standard InputStream, shows the output using the
 	 * Appender instance.
 	 * 
-	 * @param StdInputStream
+	 * @param stdInputStream
 	 * @throws IOException
 	 */
-	public void FormatStdStream(InputStream StdInputStream) throws IOException {
-		formatStream(StdInputStream, false);
-
+	public void FormatStdStream(InputStream stdInputStream) {
+		formatStream(stdInputStream, false);
 	}
 
 	// ============================================================
 
 	/**
-	 ** Formats the passed error InputStream, shows the output using the Appender
-	 * instance.
+	 ** Formats the passed error InputStream, shows the output using the
+	 * Appender instance.
 	 * 
 	 * @param errorStream
 	 * @throws IOException
 	 */
-	public void FormatErrStream(InputStream errorStream) throws IOException {
-
+	public void FormatErrStream(InputStream errorStream) {
 		formatStream(errorStream, true);
-
 	}
 	// ============================================================
 
@@ -103,16 +100,25 @@ public class ExecuterStreamFormatter {
 	 * @param isError
 	 * @throws IOException
 	 */
-	protected void formatStream(InputStream inputStream, boolean isError) throws IOException {
-
+	protected void formatStream(InputStream inputStream, boolean isError) {
 		bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 		String tempLine = null;
+		//		StringBuilder built = new StringBuilder();
 
 		// Read output
-		while ((tempLine = bufferedReader.readLine()) != null) {
-			showOutputLine(tempLine, isError);
+		try {
+			//			int count = 1;
+			while ((tempLine = bufferedReader.readLine()) != null) {
+				//				built.append(tempLine).append(System.getProperty("line.separator"));
+				//				if (count++ == 4) {
+				showOutputLine(tempLine, isError);
+				//					count = 0;
+				//					built = new StringBuilder();
+				//				}
+			}
 		}
-
+		catch (IOException e) {// just stop
+		}
 	}
 	// ============================================================
 
@@ -124,9 +130,9 @@ public class ExecuterStreamFormatter {
 	protected void showOutputLine(String line, boolean isError) {
 
 		if (isError)
-			outputObject.appendErrLine(line + System.getProperty("line.separator"));
+			outputObject.appendErrText(line);
 		else
-			outputObject.appendStdLine(line + System.getProperty("line.separator"));
+			outputObject.appendText(line);
 
 	}
 	// ============================================================
@@ -136,10 +142,14 @@ public class ExecuterStreamFormatter {
 	 * 
 	 * @throws IOException
 	 */
-	void closeResources() throws IOException {
+	void closeResources() {
 
 		if (bufferedReader != null) {
-			bufferedReader.close();
+			try {
+				bufferedReader.close();
+			}
+			catch (IOException e) {
+			}
 			bufferedReader = null;
 		}
 
