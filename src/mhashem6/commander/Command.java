@@ -47,6 +47,7 @@ public class Command implements Serializable {
 
 	protected ArrayList<String> command;
 	protected ArrayList<String> commandArgs;
+	protected ArrayList<String> commandParams;
 	protected ArrayList<String> finalCommand;
 	// ============================================================
 
@@ -56,6 +57,7 @@ public class Command implements Serializable {
 	protected void init() {
 		command = new ArrayList<>();
 		commandArgs = new ArrayList<>();
+		commandParams = new ArrayList<>();
 		finalCommand = new ArrayList<>();
 
 	}
@@ -183,7 +185,10 @@ public class Command implements Serializable {
 
 		clear();
 		for (String c : cmd)
-			command.add(c);
+			if (c.startsWith("-")) 
+				appendArgument(c);
+			 else
+				command.add(c);
 	}
 	// ============================================================
 
@@ -196,8 +201,7 @@ public class Command implements Serializable {
 	 */
 	public void setCommand(ArrayList<String> cmd) {
 
-		clear();
-		this.command.addAll(cmd);
+		setCommand((String[]) cmd.toArray());
 	}
 	// ============================================================
 	// ============================================================
@@ -210,8 +214,8 @@ public class Command implements Serializable {
 	 * @param argument
 	 * @see Command#clearArguments()
 	 */
-	public void appendArgument(String argument) {
-		commandArgs.add(argument);
+	public boolean appendArgument(String argument) {
+		return commandArgs.add(argument);
 
 	}
 	// ============================================================
@@ -229,7 +233,35 @@ public class Command implements Serializable {
 	}
 	// ============================================================
 	// ============================================================
+	
+	// PARAMETERS >>>>
 
+	/**
+	 * appends a new argument to the command.
+	 * 
+	 * @param parameter
+	 * @see Command#clearParams()
+	 */
+	public boolean appendParameter(String parameter) {
+		return commandParams.add(parameter);
+
+	}
+	// ============================================================
+
+	/**
+	 * clears only the parameters
+	 * 
+	 * @see Command#appendParameter(String arg)
+	 * @see Command#clear()
+	 * @see Command#clearAll()
+	 */
+	public void clearParameters() {
+		commandParams.clear();
+
+	}
+	// ============================================================
+	// ============================================================
+	
 	// FINAL COMMAND >>>>
 
 	/**
@@ -258,6 +290,7 @@ public class Command implements Serializable {
 			finalCommand.add(getClient());
 		finalCommand.addAll(command);
 		finalCommand.addAll(commandArgs);
+		finalCommand.addAll(commandParams);
 
 		return finalCommand;
 	}
@@ -290,6 +323,7 @@ public class Command implements Serializable {
 	public void clear() {
 		command.clear();
 		clearArguments();
+		clearParameters();
 		finalCommand.clear();
 
 	}
