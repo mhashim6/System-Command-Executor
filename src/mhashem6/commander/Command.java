@@ -185,9 +185,9 @@ public class Command implements Serializable {
 
 		clear();
 		for (String c : cmd)
-			if (c.startsWith("-")) 
-				appendArgument(c);
-			 else
+			//if (c.startsWith("-"))      //I was trying to separate the args from the command itself, but it's buggy
+			//	appendArgument(c);
+			// else
 				command.add(c);
 	}
 	// ============================================================
