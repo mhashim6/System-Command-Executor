@@ -1,10 +1,12 @@
 A simple Library made to make the process of executing command lines through java programs simpler. It also returns the output line by line.  
 
 ```java
-CommanBuilder builder = new CommanBuilder();
-Executer executer = new Executer(new ExecuterStreamFormatter()/*implement to redirect the output your way*/);
-try{
-executer.execute(builder.forCommandLine("adb devices").withOptions(new String[]{"-l"}).build()); //this will execute "adb devices -l" command.
+new Executer(new ExecuterStreamFormatter())  
+.execute(new CommandBuilder()  
+.forCommandLine("adb devices")  
+.withOptions(new String[]{"-l"})  
+.build());  
+//this will execute "adb devices -l" command.
 }catch(IOException e){
 e.printStackTrace();
 }
