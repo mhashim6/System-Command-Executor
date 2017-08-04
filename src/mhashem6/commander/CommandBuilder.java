@@ -53,7 +53,7 @@ public class CommandBuilder {
 	/**
 	 * will clear any previous options if any
 	 */
-	public CommandBuilder withOptions(String[] params) {
+	public CommandBuilder withOptions(String... params) {
 		commandOptions.clear();
 		if (params != null && params.length != 0)
 			commandOptions.addAll(Arrays.asList(params));
@@ -64,7 +64,7 @@ public class CommandBuilder {
 	/**
 	 * will clear any previous args if any
 	 */
-	public CommandBuilder withArgs(String[] args) {
+	public CommandBuilder withArgs(String... args) {
 		commandArgs.clear();
 		if (args != null && args.length != 0)
 			commandArgs.addAll(Arrays.asList(args));
@@ -95,9 +95,7 @@ public class CommandBuilder {
 			public String[] args() {
 				return commandArgs.toArray(new String[commandArgs.size()]);
 			}
-
 		};
-
 	}
 	// ============================================================
 
