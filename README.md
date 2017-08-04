@@ -6,7 +6,7 @@ The following snippets show how to execute a command, e.g, "adb devices -l", and
 new Executer(new ExecuterStreamFormatter())  
 .execute(new CommandBuilder()  
 .forCommandLine("adb devices")  
-.withOptions(new String[]{"-l"})  
+.withOptions("-l") //varargs
 .build());  
 }catch(IOException e){
 e.printStackTrace();
