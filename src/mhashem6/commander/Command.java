@@ -11,14 +11,14 @@
 
 package mhashem6.commander;
 
-/**
- * @author mhashim6 (Muhammad Hashim)
- *
- */
-public interface Appender {
+public interface Command {
 
-	void appendText(String text);
+	String[] executableCommand();
 
-	void appendErrText(String text);
+	String[] options();
+
+	String[] args();
+
+	String toString();
+
 }
-// ============================================================
