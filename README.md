@@ -1,6 +1,6 @@
 A simple Library made to make the process of executing command lines through java programs simpler. It also returns the output line by line.  
 
-The following snippets show how to execute a command, e.g, "adb devices -l", and redirect the output to the console:
+The following snippet show how to execute a command, e.g, "adb devices -l", and redirect the output to the console:
 
 ```java
 new Executer(new ExecuterStreamFormatter())  
