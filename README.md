@@ -3,12 +3,15 @@ A simple Library to make the process of executing system commands through java a
 The following snippet show how to execute a command, e.g, "adb devices -l", and redirect the output to the console:
 
 ```java
-new Executer(new ExecuterStreamFormatter())  
-.execute(new CommandBuilder()  
-.forCommandLine("adb devices")  
-.withOptions("-l") //varargs
-.build());  
-}catch(IOException e){
+try {
+new CommandExecutor(
+new ExecuterStreamFormatter())
+.execute(new CommandBuilder()
+.forCommandLine("adb devices")
+.withOptions("-l")
+.build());
+}
+catch (IOException e) {
 e.printStackTrace();
 }
 ```
