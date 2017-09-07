@@ -1,29 +1,63 @@
-A simple Library to make the process of executing system commands through java a simple task.
+Simple Library to make the process of executing system commands through java a simple task.
+The library is thread-safe, can be used to execute multiple commands asynchronously.
 
-The following snippet show how to execute a command, e.g, "adb devices -l", and redirect the output to the console:
+------
+**How to**
 
-```java
-try {
-new CommandExecutor(
-new ExecuterStreamFormatter())
-.execute(new CommandBuilder()
-.forCommandLine("adb devices")
-.withOptions("-l")
-.build());
-}
-catch (IOException e) {
-e.printStackTrace();
-}
-```
+If you want to execute a command, and redirect the output to the `console`:
 
-Say You want to redirect the output to another object, e.g, a JTextArea named outputArea, You only have to modify the first line:  
-First, outputArea must implement the Appender interface provided in the library.  
-Now, You can pass it to the ExecuterStreamFormatter instance:
+    try {
+    CommandExecutor.execute(new CommandBuilder().forCommandLine("ping google.com").build());
+    }
+    catch (IOException e) {
+    e.printStackTrace();
+    }
 
-```java
-new ExecuterStreamFormatter(outputArea); 
-```
-__________  
+------
+However, this library gives you more control over the commands being executed; 
 
-This library is the base of (Simple-ADB) program found here :
-[xda-developers](http://forum.xda-developers.com/android/software/revive-simple-adb-tool-t3417155) , [Source-Forge](https://sourceforge.net/projects/sadb/) , [GitHub](https://github.com/mhashim6/Simple-ADB)..
+ - You can use the `CommandBuilder` as wrapper for the parts that form the command line you
+   want to execute; such as arguments
+   (`CommandBuilder#withArgs`) and
+   options(`CommandBuilder#withOptions`).
+   
+ - You can redirect the `standard` and `error` outputs to any object You want, just implement the `Appender` interface.
+
+ - You can retrieve the `exit code` of the process, abort the process,
+   by simply using the `ProcessMonitor` and `ExecutionReport` objects.
+
+An example:
+
+    Command cmd = new CommandBuilder("adb devices").withOptions("-l").build();
+    ExecutionOutputPrinter eop = new ExecutionOutputPrinter(new Appender() {
+    
+    @Override
+    public void appendStdText(String text) {
+    // your code to show std output lines.
+    }
+    
+    @Override
+    public void appendErrText(String text) {
+    // your code to show error lines.
+    }
+    });
+    
+    try {
+    ProcessMonitor pMonitor = CommandExecutor.execute(cmd, eop); //execute the command, redirect the output to eop.
+    ExecutionReport report = pMonitor.getExecutionReport(); //blocks until the process finishes.
+    
+    String commandLine = cmd.toString();
+    int exitCode = report.exitValue();
+    
+    System.out.printf("command line: %s\nexecution finished with exit code: %d\n\n", commandLine, exitCode);
+    }
+    catch (UnrecognisedCmdException e) {
+    System.err.println(e);
+    }
+
+to abort a running process (command), you can do use the `ProcessMonitor` instance that you obtained previously:
+
+    pMonitor.abort();
+
+
+----------
