@@ -7,7 +7,7 @@ The library is thread-safe, can be used to execute multiple commands asynchronou
 If you want to execute a command, and redirect the output to the `console`:
 
     try {
-    CommandExecutor.execute(new CommandBuilder().forCommandLine("ping google.com").build());
+    CommandExecutor.execute(new CommandBuilder("ping google.com").build());
     }
     catch (IOException e) {
     e.printStackTrace();
@@ -28,9 +28,9 @@ However, this library gives you more control over the commands being executed;
 
 
 ------
-An example:
+An advanced example:
 
-    Command cmd = new CommandBuilder("adb devices").withOptions("-l").build();
+    Command cmd = new CommandBuilder().forCommandLine("ping").withArgs("google.com").build();
     ExecutionOutputPrinter eop = new ExecutionOutputPrinter(new Appender() {
     
     @Override
