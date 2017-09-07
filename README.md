@@ -16,16 +16,18 @@ If you want to execute a command, and redirect the output to the `console`:
 ------
 However, this library gives you more control over the commands being executed; 
 
- - You can use the `CommandBuilder` as wrapper for the parts that form the command line you
+ - You can use the `CommandBuilder` as *wrapper* for the parts that form the command line you
    want to execute; such as arguments
    (`CommandBuilder#withArgs`) and
    options(`CommandBuilder#withOptions`).
    
- - You can redirect the `standard` and `error` outputs to any object You want, just implement the `Appender` interface.
+ - You can *redirect* the `standard` and `error` outputs to any object You want, just *implement* the `Appender` interface.
 
- - You can retrieve the `exit code` of the process, abort the process,
+ - You can *retrieve* the `exit code` of the process, or *abort* the process,
    by simply using the `ProcessMonitor` and `ExecutionReport` objects.
 
+
+------
 An example:
 
     Command cmd = new CommandBuilder("adb devices").withOptions("-l").build();
