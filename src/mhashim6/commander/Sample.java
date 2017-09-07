@@ -16,7 +16,7 @@ public class Sample {
 
 	public static void main(String[] args) {
 
-		Command cmd = new CommandBuilder("adb devices").withOptions("-l").build();
+		Command cmd = new CommandBuilder("ping").withArgs("google.com").build();
 		ExecutionOutputPrinter eop = new ExecutionOutputPrinter(new Appender() {
 
 			@Override
@@ -32,9 +32,8 @@ public class Sample {
 
 		try {
 			ProcessMonitor pMonitor = CommandExecutor.execute(cmd, eop); //execute the command, redirect the output to eop.
-			ExecutionReport report = pMonitor.getExecutionReport(); //blocks until the process finishes.
+			ExecutionReport report = pMonitor.getExecutionReport(); //blocks until the process finishes or gets aborted.
 
-			pMonitor.abort();
 			String commandLine = cmd.toString();
 			int exitCode = report.exitValue();
 
