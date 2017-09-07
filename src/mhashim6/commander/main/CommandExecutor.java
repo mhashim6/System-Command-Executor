@@ -14,7 +14,7 @@ import mhashim6.commander.exceptions.*;
 public class CommandExecutor {
 
 	private final static ProcessBuilder		pb				= new ProcessBuilder();
-	private final static ExecutorService	executor	= Executors.newCachedThreadPool();
+	private final static ExecutorService	WORKERS	= Executors.newCachedThreadPool();
 
 	protected final static String	NEW_LINE	= System.getProperty("line.separator");
 //	private final static String		HEADER		= "--powered by commander library." + NEW_LINE + NEW_LINE;
@@ -30,7 +30,7 @@ public class CommandExecutor {
 		Process p = executeCommand(cmd);
 		recordOutput(p, outputPrinter);
 
-		Future<ExecutionReport> futureReport = executor.submit(new ExecutionCallable(p, cmd));
+		Future<ExecutionReport> futureReport = WORKERS.submit(new ExecutionCallable(p, cmd));
 		return new ProcessMonitor(p, futureReport);
 	}
 	// ============================================================
@@ -52,8 +52,8 @@ public class CommandExecutor {
 
 	private static void recordOutput(Process p, ExecutionOutputPrinter outputPrinter) {
 	//	outputPrinter.getAppender().appendStdText(HEADER);
-		executor.execute(() -> outputPrinter.handleStdStream(p.getInputStream()));
-		executor.execute(() -> outputPrinter.handleErrStream(p.getErrorStream()));
+		WORKERS.execute(() -> outputPrinter.handleStdStream(p.getInputStream()));
+		WORKERS.execute(() -> outputPrinter.handleErrStream(p.getErrorStream()));
 	}
 	// ============================================================
 

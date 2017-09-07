@@ -1,13 +1,12 @@
 package mhashim6.commander;
 
-import java.io.IOException;
-
 import mhashim6.commander.exceptions.UnrecognisedCmdException;
 import mhashim6.commander.main.Appender;
 import mhashim6.commander.main.Command;
 import mhashim6.commander.main.CommandBuilder;
 import mhashim6.commander.main.CommandExecutor;
 import mhashim6.commander.main.ExecutionOutputPrinter;
+import mhashim6.commander.main.ExecutionReport;
 import mhashim6.commander.main.ProcessMonitor;
 
 /**
@@ -17,41 +16,32 @@ public class Sample {
 
 	public static void main(String[] args) {
 
-		//compact form, output will show using System.out.
-		try {
-			CommandExecutor.execute(new CommandBuilder().forCommandLine("adb devices").withOptions("-l").build());
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		//advanced form, where you can redirect output to any object you want.
-		//just pass a custom ExecutionOutputPrinter with Appender implementation.
-
-		Command cmd = new CommandBuilder("adb shell netstat").build();
+		Command cmd = new CommandBuilder("adb devices").withOptions("-l").build();
 		ExecutionOutputPrinter eop = new ExecutionOutputPrinter(new Appender() {
 
 			@Override
 			public void appendStdText(String text) {
-				// handle lines here.
+				// your code to show std output lines.
 			}
 
 			@Override
 			public void appendErrText(String text) {
-				// handle error lines here.
+				// your code to show error lines.
 			}
 		});
 
 		try {
-			ProcessMonitor pMonitor = CommandExecutor.execute(cmd, eop);
+			ProcessMonitor pMonitor = CommandExecutor.execute(cmd, eop); //execute the command, redirect the output to eop.
+			ExecutionReport report = pMonitor.getExecutionReport(); //blocks until the process finishes.
 
-			while (pMonitor.isAlive());
+			pMonitor.abort();
+			String commandLine = cmd.toString();
+			int exitCode = report.exitValue();
 
-			pMonitor.getExecutionReport();
+			System.out.printf("command line: %s\nexecution finished with exit code: %d\n\n", commandLine, exitCode);
 		}
 		catch (UnrecognisedCmdException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.err.println(e);
 		}
 	}
 }
