@@ -46,7 +46,7 @@ An advanced example:
     
     try {
     ProcessMonitor pMonitor = CommandExecutor.execute(cmd, eop); //execute the command, redirect the output to eop.
-    ExecutionReport report = pMonitor.getExecutionReport(); //blocks until the process finishes.
+    ExecutionReport report = pMonitor.getExecutionReport(); //blocks until the process finishes or gets aborted.
     
     String commandLine = cmd.toString();
     int exitCode = report.exitValue();
