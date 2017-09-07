@@ -30,7 +30,7 @@ However, this library gives you more control over the commands being executed;
 ------
 An advanced example:
 
-    Command cmd = new CommandBuilder().forCommandLine("adb devices").withOptions("-l").build();
+    Command cmd = new CommandBuilder().forCommandLine("ping").withArgs("google.com").build();
     ExecutionOutputPrinter eop = new ExecutionOutputPrinter(new Appender() {
     
     @Override
