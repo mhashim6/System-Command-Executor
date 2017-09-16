@@ -32,7 +32,7 @@ public class CommandBuilder {
 	/**
 	 * side effect: will clear any previously set data if any.
 	 */
-	public synchronized CommandBuilder forCommandLine(String line) {
+	public CommandBuilder forCommandLine(String line) {
 		clearAll();
 		cmdLine.add(line);
 		return this;
@@ -42,7 +42,7 @@ public class CommandBuilder {
 	/**
 	 * side effect: will clear any previously set options if any.
 	 */
-	public synchronized CommandBuilder withOptions(String... params) {
+	public CommandBuilder withOptions(String... params) {
 		cmdOptions.clear();
 		if (params != null && params.length != 0) cmdOptions.addAll(Arrays.asList(params));
 		return this;
@@ -52,39 +52,25 @@ public class CommandBuilder {
 	/**
 	 * side effect: will clear any previously set arguments if any.
 	 */
-	public synchronized CommandBuilder withArgs(String... args) {
+	public CommandBuilder withArgs(String... args) {
 		cmdArgs.clear();
 		if (args != null && args.length != 0) cmdArgs.addAll(Arrays.asList(args));
 		return this;
 	}
 
-	public synchronized Command build() {
+	public Command build() {
 		String executableCmdLine = finalCmdList().toString().replace(COMMA, EMPTY_STRING);
-		String[] executableCmd, options, args;
-
-		executableCmd = executableCmdLine.substring(1, executableCmdLine.length() - 1).split(WHITE_SPACE);
-		options = cmdOptions.toArray(new String[cmdOptions.size()]);
-		args = cmdArgs.toArray(new String[cmdArgs.size()]);
+		String[] executableCmd = executableCmdLine.substring(1, executableCmdLine.length() - 1).split(WHITE_SPACE);
 
 		return new Command() {
 			@Override
-			public String[] executableCommand() {
+			public String[] executable() {
 				return executableCmd;
 			}
 
 			@Override
-			public String toString() {
+			public String string() {
 				return executableCmdLine;
-			}
-
-			@Override
-			public String[] options() {
-				return options;
-			}
-
-			@Override
-			public String[] args() {
-				return args;
 			}
 		};
 	}

@@ -38,13 +38,13 @@ public class CommandExecutor {
 	private static Process executeCommand(Command cmd) throws UnrecognisedCmdException {
 		synchronized (pb) {
 			try {
-				pb.command(cmd.executableCommand());
+				pb.command(cmd.executable());
 				Process process = pb.start();
 				return process;
 			}
 
 			catch (IOException e) {
-				throw new UnrecognisedCmdException(cmd.toString());
+				throw new UnrecognisedCmdException(cmd.string());
 			}
 		}
 	}

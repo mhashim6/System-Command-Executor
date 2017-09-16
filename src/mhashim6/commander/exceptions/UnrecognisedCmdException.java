@@ -15,7 +15,7 @@ public class UnrecognisedCmdException extends IOException {
 		this.cmd = cmd;
 	}
 
-	public String toString() {
+	public String string() {
 		return "could not recognise " + cmd;
 
 	}

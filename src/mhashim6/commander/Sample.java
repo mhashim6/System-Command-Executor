@@ -34,7 +34,7 @@ public class Sample {
 			ProcessMonitor pMonitor = CommandExecutor.execute(cmd, eop); //execute the command, redirect the output to eop.
 			ExecutionReport report = pMonitor.getExecutionReport(); //blocks until the process finishes or gets aborted.
 
-			String commandLine = cmd.toString();
+			String commandLine = cmd.string();
 			int exitCode = report.exitValue();
 
 			System.out.printf("command line: %s\nexecution finished with exit code: %d\n\n", commandLine, exitCode);
