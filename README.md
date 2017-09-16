@@ -57,7 +57,7 @@ An advanced example:
     System.err.println(e);
     }
 
-to abort a running process (command), you can do use the `ProcessMonitor` instance that you obtained previously:
+to abort a running process (command), you can use the `ProcessMonitor` instance that you obtained previously:
 
     pMonitor.abort();
 
