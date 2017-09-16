@@ -7,7 +7,7 @@ The library is thread-safe, can be used to execute multiple commands asynchronou
 If you want to execute a command, and redirect the output to the `console`:
 
     try {
-    CommandExecutor.execute(new CommandBuilder("ping google.com").build());
+    CommandExecutor.execute("ping google.com");
     }
     catch (IOException e) {
     e.printStackTrace();
@@ -48,7 +48,7 @@ An advanced example:
     ProcessMonitor pMonitor = CommandExecutor.execute(cmd, eop); //execute the command, redirect the output to eop.
     ExecutionReport report = pMonitor.getExecutionReport(); //blocks until the process finishes or gets aborted.
     
-    String commandLine = cmd.toString();
+    String commandLine = cmd.string();
     int exitCode = report.exitValue();
     
     System.out.printf("command line: %s\nexecution finished with exit code: %d\n\n", commandLine, exitCode);

@@ -8,7 +8,8 @@ import java.util.Arrays;
  */
 public class CommandBuilder {
 
-	private final ArrayList<String> cmdLine, cmdArgs, cmdOptions, finalCommand;
+	private String									cmdLine;
+	private final ArrayList<String>	cmdArgs, cmdOptions, finalCommand;
 
 	private static final String	WHITE_SPACE		= " ";
 	private static final String	COMMA					= ",";
@@ -16,7 +17,7 @@ public class CommandBuilder {
 	// ============================================================
 
 	public CommandBuilder() {
-		cmdLine = new ArrayList<>();
+		cmdLine = EMPTY_STRING;
 		cmdArgs = new ArrayList<>();
 		cmdOptions = new ArrayList<>();
 		finalCommand = new ArrayList<>();
@@ -34,7 +35,7 @@ public class CommandBuilder {
 	 */
 	public CommandBuilder forCommandLine(String line) {
 		clearAll();
-		cmdLine.add(line);
+		this.cmdLine = line;
 		return this;
 	}
 	// ============================================================
@@ -78,7 +79,7 @@ public class CommandBuilder {
 
 	private ArrayList<String> finalCmdList() {
 		finalCommand.clear();
-		finalCommand.addAll(cmdLine);
+		finalCommand.add(cmdLine);
 		finalCommand.addAll(cmdOptions);
 		finalCommand.addAll(cmdArgs);
 
@@ -87,11 +88,26 @@ public class CommandBuilder {
 	// ============================================================
 
 	private void clearAll() {
-		cmdLine.clear();
+		cmdLine = EMPTY_STRING;
 		cmdOptions.clear();
 		cmdArgs.clear();
 		finalCommand.clear();
 	}
 	// ============================================================
 
+	public static final Command buildRawCommand(String cmdLine) {
+		return new Command() {
+
+			@Override
+			public String string() {
+				return cmdLine;
+			}
+
+			@Override
+			public String[] executable() {
+				return cmdLine.split(" ");
+			}
+
+		};
+	}
 }

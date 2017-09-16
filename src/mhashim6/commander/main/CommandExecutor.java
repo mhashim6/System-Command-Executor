@@ -13,12 +13,21 @@ import mhashim6.commander.exceptions.*;
  */
 public class CommandExecutor {
 
-	private final static ProcessBuilder		pb				= new ProcessBuilder();
+	private final static ProcessBuilder		pb			= new ProcessBuilder();
 	private final static ExecutorService	WORKERS	= Executors.newCachedThreadPool();
 
-	protected final static String	NEW_LINE	= System.getProperty("line.separator");
-//	private final static String		HEADER		= "--powered by commander library." + NEW_LINE + NEW_LINE;
+	protected final static String NEW_LINE = System.getProperty("line.separator");
+	//	private final static String		HEADER		= "--powered by commander library." + NEW_LINE + NEW_LINE;
 	// ============================================================
+
+	public static ProcessMonitor execute(String cmdLine) throws UnrecognisedCmdException {
+		return execute(cmdLine, ExecutionOutputPrinter.DEFAULT_OUTPUT_PRINTER);
+	}
+
+	public static ProcessMonitor execute(String cmdLine, ExecutionOutputPrinter outputPrinter)
+			throws UnrecognisedCmdException {
+		return execute(CommandBuilder.buildRawCommand(cmdLine), outputPrinter);
+	}
 
 	public static ProcessMonitor execute(Command cmd) throws UnrecognisedCmdException {
 		return execute(cmd, ExecutionOutputPrinter.DEFAULT_OUTPUT_PRINTER);
@@ -51,7 +60,7 @@ public class CommandExecutor {
 	// ============================================================
 
 	private static void recordOutput(Process p, ExecutionOutputPrinter outputPrinter) {
-	//	outputPrinter.getAppender().appendStdText(HEADER);
+		//	outputPrinter.getAppender().appendStdText(HEADER);
 		WORKERS.execute(() -> outputPrinter.handleStdStream(p.getInputStream()));
 		WORKERS.execute(() -> outputPrinter.handleErrStream(p.getErrorStream()));
 	}
