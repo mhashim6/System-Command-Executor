@@ -21,12 +21,14 @@ public class Sample {
 
 			@Override
 			public void appendStdText(String text) {
-				// your code to show std output lines.
+				System.out.println(text);
+				//or your code to show std output lines.
 			}
 
 			@Override
 			public void appendErrText(String text) {
-				// your code to show error lines.
+				System.err.println(text);
+				//or your code to show error lines.
 			}
 		});
 
