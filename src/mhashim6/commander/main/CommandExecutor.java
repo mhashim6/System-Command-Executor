@@ -1,12 +1,13 @@
 package mhashim6.commander.main;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import mhashim6.commander.exceptions.*;
+import mhashim6.commander.exceptions.UnrecognisedCmdException;
 
 /**
  * @author mhashim6
@@ -21,22 +22,13 @@ public class CommandExecutor {
 	// ============================================================
 
 	public static ProcessMonitor execute(String cmdLine) throws UnrecognisedCmdException {
-		return execute(cmdLine, ExecutionOutputPrinter.DEFAULT_OUTPUT_PRINTER);
+		return execute(CommandBuilder.buildRawCommand(cmdLine), null, ExecutionOutputPrinter.DEFAULT_OUTPUT_PRINTER);
 	}
 
-	public static ProcessMonitor execute(String cmdLine, ExecutionOutputPrinter outputPrinter)
-			throws UnrecognisedCmdException {
-		return execute(CommandBuilder.buildRawCommand(cmdLine), outputPrinter);
-	}
-
-	public static ProcessMonitor execute(Command cmd) throws UnrecognisedCmdException {
-		return execute(cmd, ExecutionOutputPrinter.DEFAULT_OUTPUT_PRINTER);
-	}
-
-	public static ProcessMonitor execute(Command cmd, ExecutionOutputPrinter outputPrinter)
+	public static ProcessMonitor execute(Command cmd, File directory, ExecutionOutputPrinter outputPrinter)
 			throws UnrecognisedCmdException {
 
-		Process p = executeCommand(cmd);
+		Process p = executeCommand(cmd, directory);
 		recordOutput(p, outputPrinter);
 
 		Future<ExecutionReport> futureReport = WORKERS.submit(new ExecutionCallable(p, cmd));
@@ -44,9 +36,10 @@ public class CommandExecutor {
 	}
 	// ============================================================
 
-	private static Process executeCommand(Command cmd) throws UnrecognisedCmdException {
+	private static Process executeCommand(Command cmd, File directory) throws UnrecognisedCmdException {
 		synchronized (pb) {
 			try {
+				pb.directory(directory);
 				pb.command(cmd.executable());
 				Process process = pb.start();
 				return process;

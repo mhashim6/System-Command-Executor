@@ -2,22 +2,26 @@ package mhashim6.commander.main;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author mhashim6
  */
 public class CommandBuilder {
 
-	private String									cmdLine;
+	private String									commandLine;
 	private final ArrayList<String>	cmdArgs, cmdOptions, finalCommand;
 
-	private static final String	WHITE_SPACE		= " ";
-	private static final String	COMMA					= ",";
-	private static final String	EMPTY_STRING	= "";
+	//	private static final String	WHITE_SPACE		= " ";
+	private static final String		COMMA						= ",";
+	private static final String		EMPTY_STRING		= "";
+	private static final Pattern	QUOTES_PATTERN	= Pattern.compile("([^\"]\\S*|\".+?\")\\s*");
 	// ============================================================
 
 	public CommandBuilder() {
-		cmdLine = EMPTY_STRING;
+		commandLine = EMPTY_STRING;
 		cmdArgs = new ArrayList<>();
 		cmdOptions = new ArrayList<>();
 		finalCommand = new ArrayList<>();
@@ -35,7 +39,7 @@ public class CommandBuilder {
 	 */
 	public CommandBuilder forCommandLine(String line) {
 		clearAll();
-		this.cmdLine = line;
+		this.commandLine = line;
 		return this;
 	}
 	// ============================================================
@@ -58,28 +62,20 @@ public class CommandBuilder {
 		if (args != null && args.length != 0) cmdArgs.addAll(Arrays.asList(args));
 		return this;
 	}
+	// ============================================================
 
 	public Command build() {
+
 		String executableCmdLine = finalCmdList().toString().replace(COMMA, EMPTY_STRING);
-		String[] executableCmd = executableCmdLine.substring(1, executableCmdLine.length() - 1).split(WHITE_SPACE);
+		executableCmdLine = executableCmdLine.substring(1, executableCmdLine.length() - 1);
+		String[] executableCmd = splitCmd(executableCmdLine);
 
-		return new Command() {
-			@Override
-			public String[] executable() {
-				return executableCmd;
-			}
-
-			@Override
-			public String string() {
-				return executableCmdLine;
-			}
-		};
+		return new CommandImpl(executableCmdLine, executableCmd);
 	}
-	// ============================================================
 
 	private ArrayList<String> finalCmdList() {
 		finalCommand.clear();
-		finalCommand.add(cmdLine);
+		finalCommand.add(commandLine);
 		finalCommand.addAll(cmdOptions);
 		finalCommand.addAll(cmdArgs);
 
@@ -87,8 +83,16 @@ public class CommandBuilder {
 	}
 	// ============================================================
 
+	private static String[] splitCmd(String cmd) {
+		List<String> strings = new ArrayList<String>();
+		Matcher m = QUOTES_PATTERN.matcher(cmd);
+		while (m.find())
+			strings.add(m.group(1));
+		return strings.toArray(new String[strings.size()]);
+	}
+
 	private void clearAll() {
-		cmdLine = EMPTY_STRING;
+		commandLine = EMPTY_STRING;
 		cmdOptions.clear();
 		cmdArgs.clear();
 		finalCommand.clear();
@@ -96,18 +100,28 @@ public class CommandBuilder {
 	// ============================================================
 
 	public static final Command buildRawCommand(String cmdLine) {
-		return new Command() {
+		return new CommandImpl(cmdLine, splitCmd(cmdLine));
+	}
 
-			@Override
-			public String string() {
-				return cmdLine;
-			}
+	private static class CommandImpl implements Command {
 
-			@Override
-			public String[] executable() {
-				return cmdLine.split(" ");
-			}
+		private final String		cmdLine;
+		private final String[]	executableCmd;
 
-		};
+		private CommandImpl(String cmdLine, String[] executableCmd) {
+			this.cmdLine = cmdLine;
+			this.executableCmd = executableCmd;
+		}
+
+		@Override
+		public String[] executable() {
+			return executableCmd;
+		}
+
+		@Override
+		public String string() {
+			return cmdLine;
+		}
+
 	}
 }

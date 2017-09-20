@@ -33,7 +33,7 @@ public class Sample {
 		});
 
 		try {
-			ProcessMonitor pMonitor = CommandExecutor.execute(cmd, eop); //execute the command, redirect the output to eop.
+			ProcessMonitor pMonitor = CommandExecutor.execute(cmd, null, eop); //execute the command, redirect the output to eop.
 			ExecutionReport report = pMonitor.getExecutionReport(); //blocks until the process finishes or gets aborted.
 
 			String commandLine = cmd.string();
