@@ -44,6 +44,12 @@ public class CommandBuilder {
 	}
 	// ============================================================
 
+	public CommandBuilder addOption(String option) {
+		if (option != null) cmdOptions.add(option);
+
+		return this;
+	}
+
 	/**
 	 * side effect: will clear any previously set options if any.
 	 */
@@ -53,6 +59,12 @@ public class CommandBuilder {
 		return this;
 	}
 	// ============================================================
+
+	public CommandBuilder addArg(String arg) {
+		if (arg != null) cmdArgs.add(arg);
+
+		return this;
+	}
 
 	/**
 	 * side effect: will clear any previously set arguments if any.
@@ -84,7 +96,7 @@ public class CommandBuilder {
 	// ============================================================
 
 	private static String[] splitCmd(String cmd) {
-		List<String> strings = new ArrayList<String>();
+		List<String> strings = new ArrayList<>();
 		Matcher m = QUOTES_PATTERN.matcher(cmd);
 		while (m.find())
 			strings.add(m.group(1));
@@ -123,5 +135,9 @@ public class CommandBuilder {
 			return cmdLine;
 		}
 
+		@Override
+		public String toString() {
+			return string();
+		}
 	}
 }
