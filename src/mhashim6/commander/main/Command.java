@@ -5,8 +5,8 @@ package mhashim6.commander.main;
  */
 public interface Command {
 
-	String[] executable();
+    String[] executable();
 
-	String string();
+    String string();
 
 }

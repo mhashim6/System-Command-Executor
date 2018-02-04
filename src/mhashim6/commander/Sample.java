@@ -14,35 +14,34 @@ import mhashim6.commander.main.ProcessMonitor;
  */
 public class Sample {
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
 
-		Command cmd = new CommandBuilder("ping").withArgs("google.com").build();
-		ExecutionOutputPrinter eop = new ExecutionOutputPrinter(new Appender() {
+        Command cmd = new CommandBuilder("ping").withArgs("google.com").build();
+        ExecutionOutputPrinter eop = new ExecutionOutputPrinter(new Appender() {
 
-			@Override
-			public void appendStdText(String text) {
-				System.out.println(text);
-				//or your code to show std output lines.
-			}
+            @Override
+            public void appendStdText(String text) {
+                System.out.println(text);
+                //or your code to show std output lines.
+            }
 
-			@Override
-			public void appendErrText(String text) {
-				System.err.println(text);
-				//or your code to show error lines.
-			}
-		});
+            @Override
+            public void appendErrText(String text) {
+                System.err.println(text);
+                //or your code to show error lines.
+            }
+        });
 
-		try {
-			ProcessMonitor pMonitor = CommandExecutor.execute(cmd, null, eop); //execute the command, redirect the output to eop.
-			ExecutionReport report = pMonitor.getExecutionReport(); //blocks until the process finishes or gets aborted.
+        try {
+            ProcessMonitor pMonitor = CommandExecutor.execute(cmd, null, eop); //execute the command, redirect the output to eop.
+            ExecutionReport report = pMonitor.getExecutionReport(); //blocks until the process finishes or gets aborted.
 
-			String commandLine = cmd.string();
-			int exitCode = report.exitValue();
+            String commandLine = cmd.string();
+            int exitCode = report.exitValue();
 
-			System.out.printf("command line: %s\nexecution finished with exit code: %d\n\n", commandLine, exitCode);
-		}
-		catch (UnrecognisedCmdException e) {
-			System.err.println(e);
-		}
-	}
+            System.out.printf("command line: %s\nexecution finished with exit code: %d\n\n", commandLine, exitCode);
+        } catch (UnrecognisedCmdException e) {
+            System.err.println(e);
+        }
+    }
 }

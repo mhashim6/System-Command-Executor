@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="System-Command-Executor:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/System_Command_Executor_jar</output-path>
+    <root id="archive" name="System-Command-Executor.jar">
+      <element id="module-output" name="System-Command-Executor" />
+    </root>
+  </artifact>
+</component>

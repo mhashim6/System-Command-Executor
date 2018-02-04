@@ -11,133 +11,133 @@ import java.util.regex.Pattern;
  */
 public class CommandBuilder {
 
-	private String									commandLine;
-	private final ArrayList<String>	cmdArgs, cmdOptions, finalCommand;
+    private String commandLine;
+    private final ArrayList<String> cmdArgs, cmdOptions, finalCommand;
 
-	//	private static final String	WHITE_SPACE		= " ";
-	private static final String		COMMA						= ",";
-	private static final String		EMPTY_STRING		= "";
-	private static final Pattern	QUOTES_PATTERN	= Pattern.compile("([^\"]\\S*|\".+?\")\\s*");
-	// ============================================================
+    //	private static final String	WHITE_SPACE		= " ";
+    private static final String COMMA = ",";
+    private static final String EMPTY_STRING = "";
+    private static final Pattern QUOTES_PATTERN = Pattern.compile("([^\"]\\S*|\".+?\")\\s*");
+    // ============================================================
 
-	public CommandBuilder() {
-		commandLine = EMPTY_STRING;
-		cmdArgs = new ArrayList<>();
-		cmdOptions = new ArrayList<>();
-		finalCommand = new ArrayList<>();
-	}
-	// ============================================================
+    public CommandBuilder() {
+        commandLine = EMPTY_STRING;
+        cmdArgs = new ArrayList<>();
+        cmdOptions = new ArrayList<>();
+        finalCommand = new ArrayList<>();
+    }
+    // ============================================================
 
-	public CommandBuilder(String cmdLine) {
-		this();
-		forCommandLine(cmdLine);
-	}
-	// ============================================================
+    public CommandBuilder(String cmdLine) {
+        this();
+        forCommandLine(cmdLine);
+    }
+    // ============================================================
 
-	/**
-	 * side effect: will clear any previously set data if any.
-	 */
-	public CommandBuilder forCommandLine(String line) {
-		clearAll();
-		this.commandLine = line;
-		return this;
-	}
-	// ============================================================
+    /**
+     * side effect: will clear any previously set data if any.
+     */
+    public CommandBuilder forCommandLine(String line) {
+        clearAll();
+        this.commandLine = line;
+        return this;
+    }
+    // ============================================================
 
-	public CommandBuilder addOption(String option) {
-		if (option != null) cmdOptions.add(option);
+    public CommandBuilder addOption(String option) {
+        if (option != null) cmdOptions.add(option);
 
-		return this;
-	}
+        return this;
+    }
 
-	/**
-	 * side effect: will clear any previously set options if any.
-	 */
-	public CommandBuilder withOptions(String... params) {
-		cmdOptions.clear();
-		if (params != null && params.length != 0) cmdOptions.addAll(Arrays.asList(params));
-		return this;
-	}
-	// ============================================================
+    /**
+     * side effect: will clear any previously set options if any.
+     */
+    public CommandBuilder withOptions(String... params) {
+        cmdOptions.clear();
+        if (params != null && params.length != 0) cmdOptions.addAll(Arrays.asList(params));
+        return this;
+    }
+    // ============================================================
 
-	public CommandBuilder addArg(String arg) {
-		if (arg != null) cmdArgs.add(arg);
+    public CommandBuilder addArg(String arg) {
+        if (arg != null) cmdArgs.add(arg);
 
-		return this;
-	}
+        return this;
+    }
 
-	/**
-	 * side effect: will clear any previously set arguments if any.
-	 */
-	public CommandBuilder withArgs(String... args) {
-		cmdArgs.clear();
-		if (args != null && args.length != 0) cmdArgs.addAll(Arrays.asList(args));
-		return this;
-	}
-	// ============================================================
+    /**
+     * side effect: will clear any previously set arguments if any.
+     */
+    public CommandBuilder withArgs(String... args) {
+        cmdArgs.clear();
+        if (args != null && args.length != 0) cmdArgs.addAll(Arrays.asList(args));
+        return this;
+    }
+    // ============================================================
 
-	public Command build() {
+    public Command build() {
 
-		String executableCmdLine = finalCmdList().toString().replace(COMMA, EMPTY_STRING);
-		executableCmdLine = executableCmdLine.substring(1, executableCmdLine.length() - 1);
-		String[] executableCmd = splitCmd(executableCmdLine);
+        String executableCmdLine = finalCmdList().toString().replace(COMMA, EMPTY_STRING);
+        executableCmdLine = executableCmdLine.substring(1, executableCmdLine.length() - 1);
+        String[] executableCmd = splitCmd(executableCmdLine);
 
-		return new CommandImpl(executableCmdLine, executableCmd);
-	}
+        return new CommandImpl(executableCmdLine, executableCmd);
+    }
 
-	private ArrayList<String> finalCmdList() {
-		finalCommand.clear();
-		finalCommand.add(commandLine);
-		finalCommand.addAll(cmdOptions);
-		finalCommand.addAll(cmdArgs);
+    private ArrayList<String> finalCmdList() {
+        finalCommand.clear();
+        finalCommand.add(commandLine);
+        finalCommand.addAll(cmdOptions);
+        finalCommand.addAll(cmdArgs);
 
-		return finalCommand;
-	}
-	// ============================================================
+        return finalCommand;
+    }
+    // ============================================================
 
-	private static String[] splitCmd(String cmd) {
-		List<String> strings = new ArrayList<>();
-		Matcher m = QUOTES_PATTERN.matcher(cmd);
-		while (m.find())
-			strings.add(m.group(1));
-		return strings.toArray(new String[strings.size()]);
-	}
+    private static String[] splitCmd(String cmd) {
+        List<String> strings = new ArrayList<>();
+        Matcher m = QUOTES_PATTERN.matcher(cmd);
+        while (m.find())
+            strings.add(m.group(1));
+        return strings.toArray(new String[strings.size()]);
+    }
 
-	private void clearAll() {
-		commandLine = EMPTY_STRING;
-		cmdOptions.clear();
-		cmdArgs.clear();
-		finalCommand.clear();
-	}
-	// ============================================================
+    private void clearAll() {
+        commandLine = EMPTY_STRING;
+        cmdOptions.clear();
+        cmdArgs.clear();
+        finalCommand.clear();
+    }
+    // ============================================================
 
-	public static final Command buildRawCommand(String cmdLine) {
-		return new CommandImpl(cmdLine, splitCmd(cmdLine));
-	}
+    public static final Command buildRawCommand(String cmdLine) {
+        return new CommandImpl(cmdLine, splitCmd(cmdLine));
+    }
 
-	private static class CommandImpl implements Command {
+    private static class CommandImpl implements Command {
 
-		private final String		cmdLine;
-		private final String[]	executableCmd;
+        private final String cmdLine;
+        private final String[] executableCmd;
 
-		private CommandImpl(String cmdLine, String[] executableCmd) {
-			this.cmdLine = cmdLine;
-			this.executableCmd = executableCmd;
-		}
+        private CommandImpl(String cmdLine, String[] executableCmd) {
+            this.cmdLine = cmdLine;
+            this.executableCmd = executableCmd;
+        }
 
-		@Override
-		public String[] executable() {
-			return executableCmd;
-		}
+        @Override
+        public String[] executable() {
+            return executableCmd;
+        }
 
-		@Override
-		public String string() {
-			return cmdLine;
-		}
+        @Override
+        public String string() {
+            return cmdLine;
+        }
 
-		@Override
-		public String toString() {
-			return string();
-		}
-	}
+        @Override
+        public String toString() {
+            return string();
+        }
+    }
 }
