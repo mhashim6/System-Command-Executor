@@ -17,7 +17,7 @@ public class CommandBuilder {
     //	private static final String	WHITE_SPACE		= " ";
     private static final String COMMA = ",";
     private static final String EMPTY_STRING = "";
-    private static final Pattern QUOTES_PATTERN = Pattern.compile("([^\"]\\S*|\".+?\")\\s*");
+    private static final Pattern QUOTES_PATTERN = Pattern.compile("([^\"|^']\\S*|[\"|'].+?[\"|'])\\s*");
     // ============================================================
 
     public CommandBuilder() {
