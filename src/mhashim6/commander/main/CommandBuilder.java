@@ -15,7 +15,6 @@ public class CommandBuilder {
     private final ArrayList<String> cmdArgs, cmdOptions, finalCommand;
 
     //	private static final String	WHITE_SPACE		= " ";
-    private static final String COMMA = ",";
     private static final String EMPTY_STRING = "";
     private static final Pattern QUOTES_PATTERN = Pattern.compile("([^\"|^']\\S*|[\"|'].+?[\"|'])\\s*");
     // ============================================================
@@ -107,9 +106,13 @@ public class CommandBuilder {
     private static String[] splitCmd(String cmd) {
         List<String> strings = new ArrayList<>();
         Matcher m = QUOTES_PATTERN.matcher(cmd);
-        while (m.find())
-            strings.add(m.group(1));
-        return strings.toArray(new String[strings.size()]);
+        while (m.find()) {
+            String token = m.group(1);
+            token = token.startsWith("'") || token.startsWith("\"") ?
+                    token.replace("'", EMPTY_STRING).replace("\"", EMPTY_STRING) : token;
+            strings.add(token);
+        }
+        return strings.toArray(new String[0]);
     }
 
     private void clearAll() {
