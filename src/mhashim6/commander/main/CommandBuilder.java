@@ -78,8 +78,8 @@ public class CommandBuilder {
 
     public Command build() {
 
-        String executableCmdLine = finalCmdList().toString().replace(COMMA, EMPTY_STRING);
-        executableCmdLine = executableCmdLine.substring(1, executableCmdLine.length() - 1);
+        String executableCmdLine = finalCmdLine(finalCmdList());
+        executableCmdLine = executableCmdLine.substring(0, executableCmdLine.length() - 1);
         String[] executableCmd = splitCmd(executableCmdLine);
 
         return new CommandImpl(executableCmdLine, executableCmd);
@@ -92,6 +92,15 @@ public class CommandBuilder {
         finalCommand.addAll(cmdArgs);
 
         return finalCommand;
+    }
+
+    private String finalCmdLine(ArrayList<String> cmdList){
+        final StringBuilder cmd = new StringBuilder();
+        for (String segment : cmdList) {
+            cmd.append(segment);
+            cmd.append(' ');
+        }
+        return cmd.toString();
     }
     // ============================================================
 
