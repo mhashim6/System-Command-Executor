@@ -15,9 +15,8 @@ public class CommandBuilder {
     private final ArrayList<String> cmdArgs, cmdOptions, finalCommand;
 
     //	private static final String	WHITE_SPACE		= " ";
-    private static final String COMMA = ",";
     private static final String EMPTY_STRING = "";
-    private static final Pattern QUOTES_PATTERN = Pattern.compile("([^\"]\\S*|\".+?\")\\s*");
+    private static final Pattern QUOTES_PATTERN = Pattern.compile("([^\"|^']\\S*|[\"|'].+?[\"|'])\\s*");
     // ============================================================
 
     public CommandBuilder() {
@@ -78,8 +77,8 @@ public class CommandBuilder {
 
     public Command build() {
 
-        String executableCmdLine = finalCmdList().toString().replace(COMMA, EMPTY_STRING);
-        executableCmdLine = executableCmdLine.substring(1, executableCmdLine.length() - 1);
+        String executableCmdLine = finalCmdLine(finalCmdList());
+        executableCmdLine = executableCmdLine.substring(0, executableCmdLine.length() - 1);
         String[] executableCmd = splitCmd(executableCmdLine);
 
         return new CommandImpl(executableCmdLine, executableCmd);
@@ -93,14 +92,27 @@ public class CommandBuilder {
 
         return finalCommand;
     }
+
+    private String finalCmdLine(ArrayList<String> cmdList){
+        final StringBuilder cmd = new StringBuilder();
+        for (String segment : cmdList) {
+            cmd.append(segment);
+            cmd.append(' ');
+        }
+        return cmd.toString();
+    }
     // ============================================================
 
     private static String[] splitCmd(String cmd) {
         List<String> strings = new ArrayList<>();
         Matcher m = QUOTES_PATTERN.matcher(cmd);
-        while (m.find())
-            strings.add(m.group(1));
-        return strings.toArray(new String[strings.size()]);
+        while (m.find()) {
+            String token = m.group(1);
+            token = token.startsWith("'") || token.startsWith("\"") ?
+                    token.replace("'", EMPTY_STRING).replace("\"", EMPTY_STRING) : token;
+            strings.add(token);
+        }
+        return strings.toArray(new String[0]);
     }
 
     private void clearAll() {
